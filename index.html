@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataForge — CRUD Operations Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Background Grid -->
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow--1"></div>
+  <div class="bg-glow bg-glow--2"></div>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="navbar__brand">
+      <div class="navbar__logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">DataForge</span>
+      </div>
+      <span class="navbar__tag">REST API Console</span>
+    </div>
+    <nav class="navbar__nav">
+      <button class="nav-btn nav-btn--active" data-view="dashboard" onclick="switchView('dashboard')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-btn" data-view="records" onclick="switchView('records')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Records
+      </button>
+      <button class="nav-btn" id="apiStatusBtn">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="apiStatusText">Connecting…</span>
+      </button>
+    </nav>
+    <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="nav-btn" onclick="switchView('dashboard');toggleMobileMenu()">Dashboard</button>
+    <button class="nav-btn" onclick="switchView('records');toggleMobileMenu()">Records</button>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- DASHBOARD VIEW -->
+    <section class="view" id="view-dashboard">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Mission Control</h1>
+          <p class="page-subtitle">Manage your REST API records from a single console.</p>
+        </div>
+        <button class="btn btn--primary" onclick="openCreateModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Record
+        </button>
+      </div>
+
+      <!-- STAT CARDS -->
+      <div class="stats-grid">
+        <div class="stat-card" id="stat-total">
+          <div class="stat-card__icon stat-card__icon--blue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="stat-card__body">
+            <span class="stat-card__label">Total Records</span>
+            <span class="stat-card__value" id="statTotal">—</span>
+          </div>
+          <div class="stat-card__trend">↑</div>
+        </div>
+        <div class="stat-card" id="stat-active">
+          <div class="stat-card__icon stat-card__icon--teal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div class="stat-card__body">
+            <span class="stat-card__label">Active Users</span>
+            <span class="stat-card__value" id="statActive">—</span>
+          </div>
+          <div class="stat-card__trend stat-card__trend--up">↑</div>
+        </div>
+        <div class="stat-card" id="stat-api">
+          <div class="stat-card__icon stat-card__icon--amber">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="stat-card__body">
+            <span class="stat-card__label">API Endpoint</span>
+            <span class="stat-card__value stat-card__value--sm">JSONPlaceholder</span>
+          </div>
+        </div>
+        <div class="stat-card" id="stat-ops">
+          <div class="stat-card__icon stat-card__icon--purple">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+          <div class="stat-card__body">
+            <span class="stat-card__label">Operations Run</span>
+            <span class="stat-card__value" id="statOps">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK ACTIONS -->
+      <div class="section-header">
+        <h2 class="section-title">Quick Actions</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="actions-grid">
+        <button class="action-card" onclick="openCreateModal()">
+          <div class="action-card__icon action-card__icon--teal">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <span class="action-card__label">Create Record</span>
+          <span class="action-card__desc">POST /users</span>
+          <svg class="action-card__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+        <button class="action-card" onclick="switchView('records');fetchRecords()">
+          <div class="action-card__icon action-card__icon--blue">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <span class="action-card__label">Fetch All Records</span>
+          <span class="action-card__desc">GET /users</span>
+          <svg class="action-card__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+        <button class="action-card" onclick="switchView('records')">
+          <div class="action-card__icon action-card__icon--amber">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </div>
+          <span class="action-card__label">Edit Records</span>
+          <span class="action-card__desc">PUT /users/:id</span>
+          <svg class="action-card__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+        <button class="action-card" onclick="switchView('records')">
+          <div class="action-card__icon action-card__icon--red">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </div>
+          <span class="action-card__label">Delete Records</span>
+          <span class="action-card__desc">DELETE /users/:id</span>
+          <svg class="action-card__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+
+      <!-- RECENT RECORDS PREVIEW -->
+      <div class="section-header" style="margin-top:2.5rem">
+        <h2 class="section-title">Recent Records</h2>
+        <button class="btn btn--ghost btn--sm" onclick="switchView('records')">View All →</button>
+      </div>
+      <div class="table-shell" id="dashboardPreview">
+        <div class="loading-state"><div class="spinner"></div><span>Loading preview…</span></div>
+      </div>
+    </section>
+
+    <!-- RECORDS VIEW -->
+    <section class="view hidden" id="view-records">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Records</h1>
+          <p class="page-subtitle">Full CRUD operations — GET, POST, PUT, DELETE.</p>
+        </div>
+        <button class="btn btn--primary" onclick="openCreateModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Record
+        </button>
+      </div>
+
+      <!-- TOOLBAR -->
+      <div class="toolbar">
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="searchInput" placeholder="Search by name, email, company…" oninput="filterRecords()" />
+          <button class="search-clear" id="searchClear" onclick="clearSearch()" style="display:none">✕</button>
+        </div>
+        <div class="toolbar__right">
+          <select class="filter-select" id="filterCompany" onchange="filterRecords()">
+            <option value="">All Companies</option>
+          </select>
+          <button class="btn btn--ghost btn--sm" onclick="fetchRecords()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.27"/></svg>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- TABLE SHELL -->
+      <div class="table-shell" id="recordsTableShell">
+        <div class="loading-state"><div class="spinner"></div><span>Fetching records…</span></div>
+      </div>
+
+      <!-- PAGINATION -->
+      <div class="pagination" id="pagination"></div>
+    </section>
+  </main>
+
+  <!-- ===== MODALS ===== -->
+
+  <!-- CREATE / EDIT MODAL -->
+  <div class="modal-backdrop" id="formModal" onclick="handleBackdropClick(event, 'formModal')">
+    <div class="modal" id="formModalBox">
+      <div class="modal__header">
+        <div>
+          <h2 class="modal__title" id="formModalTitle">Create Record</h2>
+          <p class="modal__subtitle" id="formModalSubtitle">POST /users → JSONPlaceholder</p>
+        </div>
+        <button class="modal__close" onclick="closeModal('formModal')">✕</button>
+      </div>
+      <div class="modal__body">
+        <form id="recordForm" onsubmit="handleFormSubmit(event)" novalidate>
+          <input type="hidden" id="recordId" />
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="fieldName">Full Name <span class="required">*</span></label>
+              <input type="text" class="form-input" id="fieldName" placeholder="e.g. Jane Doe" autocomplete="off" />
+              <span class="form-error" id="err-fieldName"></span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="fieldUsername">Username <span class="required">*</span></label>
+              <input type="text" class="form-input" id="fieldUsername" placeholder="e.g. janedoe" autocomplete="off" />
+              <span class="form-error" id="err-fieldUsername"></span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="fieldEmail">Email Address <span class="required">*</span></label>
+              <input type="email" class="form-input" id="fieldEmail" placeholder="jane@example.com" autocomplete="off" />
+              <span class="form-error" id="err-fieldEmail"></span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="fieldPhone">Phone Number</label>
+              <input type="text" class="form-input" id="fieldPhone" placeholder="e.g. +1 555-0100" autocomplete="off" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="fieldCompany">Company <span class="required">*</span></label>
+              <input type="text" class="form-input" id="fieldCompany" placeholder="e.g. Acme Corp" autocomplete="off" />
+              <span class="form-error" id="err-fieldCompany"></span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="fieldWebsite">Website</label>
+              <input type="text" class="form-input" id="fieldWebsite" placeholder="e.g. example.com" autocomplete="off" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="fieldCity">City</label>
+            <input type="text" class="form-input" id="fieldCity" placeholder="e.g. New York" autocomplete="off" />
+          </div>
+          <div class="modal__footer">
+            <button type="button" class="btn btn--ghost" onclick="closeModal('formModal')">Cancel</button>
+            <button type="submit" class="btn btn--primary" id="formSubmitBtn">
+              <span id="formSubmitText">Create Record</span>
+              <div class="btn-spinner hidden" id="formSpinner"></div>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELETE CONFIRM MODAL -->
+  <div class="modal-backdrop" id="deleteModal" onclick="handleBackdropClick(event, 'deleteModal')">
+    <div class="modal modal--sm" id="deleteModalBox">
+      <div class="modal__header">
+        <div class="delete-icon-wrap">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </div>
+        <button class="modal__close" onclick="closeModal('deleteModal')">✕</button>
+      </div>
+      <div class="modal__body">
+        <h2 class="modal__title">Delete Record?</h2>
+        <p class="modal__text" id="deleteModalText">This action cannot be undone. The record will be permanently removed via <code>DELETE /users/:id</code>.</p>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="closeModal('deleteModal')">Cancel</button>
+        <button class="btn btn--danger" id="confirmDeleteBtn" onclick="confirmDelete()">
+          <span id="deleteText">Delete</span>
+          <div class="btn-spinner hidden" id="deleteSpinner"></div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAIL VIEW MODAL -->
+  <div class="modal-backdrop" id="detailModal" onclick="handleBackdropClick(event, 'detailModal')">
+    <div class="modal" id="detailModalBox">
+      <div class="modal__header">
+        <div>
+          <h2 class="modal__title" id="detailName">Record Detail</h2>
+          <p class="modal__subtitle" id="detailSubtitle">—</p>
+        </div>
+        <button class="modal__close" onclick="closeModal('detailModal')">✕</button>
+      </div>
+      <div class="modal__body" id="detailBody"></div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="closeModal('detailModal')">Close</button>
+        <button class="btn btn--amber" id="detailEditBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Edit Record
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
