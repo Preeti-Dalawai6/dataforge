@@ -2,99 +2,59 @@
 
 A professional, fully responsive CRUD Operations Dashboard using **HTML + CSS + Vanilla JavaScript** for the frontend and **Node.js + Express + SQLite** for the optional real backend.
 
----
-
-## 📁 Project Structure
-
-```
+Project Structure
 dataforge/
 ├── frontend/
-│   ├── index.html        ← Main UI (Dashboard + Records views)
-│   ├── style.css         ← Dark industrial theme, fully responsive
-│   └── app.js            ← All CRUD logic, API calls, state management
+│   ├── index.html        Main UI (Dashboard + Records views)
+│   ├── style.css         Dark industrial theme, fully responsive
+│   └── app.js             All CRUD logic, API calls, state management
 │
 ├── backend/
-│   ├── server.js         ← Express app entry point
-│   ├── package.json      ← Dependencies
+│   ├── server.js          Express app entry point
+│   ├── package.json       Dependencies
 │   ├── routes/
-│   │   └── users.js      ← GET / POST / PUT / DELETE /api/users
+│   │   └── users.js       GET / POST / PUT / DELETE /api/users
 │   └── db/
-│       └── database.js   ← SQLite setup + schema + seed data
+│       └── database.js    SQLite setup, schema, seed data
 │
 └── README.md
-```
 
----
-
-## 🚀 Quick Start
-
-### Option A — Frontend Only (Zero Setup, Uses Mock API)
-
+Quick Start
+Option A — Frontend Only (Zero Setup, Uses Mock API)
 Just open the file in your browser:
-
-```bash
 open frontend/index.html
-# or drag-and-drop index.html into Chrome/Firefox
-```
+or drag and drop index.html into Chrome or Firefox.
+This mode uses JSONPlaceholder, a free mock API. Data you create is saved to localStorage. GET, PUT, and DELETE are fully functional API calls.
 
-This mode uses **JSONPlaceholder** (free mock API). Data you create is saved to `localStorage`. GET/PUT/DELETE are fully functional API calls.
+Option B — Full Stack (Real Database)
+Requirements: Node.js version 18 or higher.
 
----
-
-### Option B — Full Stack (Real Database)
-
-**Requirements:** Node.js v18+
-
-#### Step 1 — Install dependencies
-
-```bash
+Step 1 — Install dependencies
 cd backend
 npm install
-```
 
-#### Step 2 — Start the server
-
-```bash
+Step 2 — Start the server
 npm start
-# or for auto-reload during development:
+or for auto-reload during development:
 npm run dev
-```
+You will see:
+DataForge API running at http://localhost:3000
+Frontend served at http://localhost:3000
+API base: http://localhost:3000/api/users
 
-You'll see:
-```
-✅  DataForge API running at http://localhost:3000
-📁  Frontend served at   http://localhost:3000
-🔌  API base:            http://localhost:3000/api/users
-```
+Step 3 — Switch frontend to real backend
+Open frontend/app.js and change line 18:
+const USE_REAL_BACKEND = true;   // change false to true
+Then open http://localhost:3000 in your browser. All CRUD operations now hit your local SQLite database.
 
-#### Step 3 — Switch frontend to real backend
+API Endpoints
+MethodEndpointDescriptionGET/api/usersFetch all usersGET/api/users/:idFetch single userPOST/api/usersCreate new userPUT/api/users/:idUpdate existing userDELETE/api/users/:idDelete user
+Query Parameters (GET /api/users):
 
-Open `frontend/app.js` and change line 18:
+search=john — search by name, email, username, company
+company=Acme — filter by company name
 
-```js
-const USE_REAL_BACKEND = true;   // ← change false → true
-```
-
-Then open `http://localhost:3000` in your browser. All CRUD operations now hit your local SQLite database.
-
----
-
-## 🔌 API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/users` | Fetch all users |
-| `GET` | `/api/users/:id` | Fetch single user |
-| `POST` | `/api/users` | Create new user |
-| `PUT` | `/api/users/:id` | Update existing user |
-| `DELETE` | `/api/users/:id` | Delete user |
-
-### Query Parameters (GET /api/users)
-- `?search=john` — search by name, email, username, company
-- `?company=Acme` — filter by company name
-
-### Request Body (POST / PUT)
-```json
+Request Body (POST / PUT):
 {
   "name":     "Jane Doe",
   "username": "janedoe",
@@ -104,16 +64,10 @@ Then open `http://localhost:3000` in your browser. All CRUD operations now hit y
   "website":  "acme.com",
   "city":     "New York"
 }
-```
 
----
-
-## 🗄️ Database
-
-Uses **SQLite** via `better-sqlite3`. The database file `backend/db/dataforge.sqlite` is auto-created on first run with 10 seeded sample users.
-
-**Schema:**
-```sql
+Database
+Uses SQLite via better-sqlite3. The database file backend/db/dataforge.sqlite is auto-created on first run with 10 seeded sample users.
+Schema:
 CREATE TABLE users (
   id         INTEGER PRIMARY KEY AUTOINCREMENT,
   name       TEXT    NOT NULL,
@@ -126,54 +80,24 @@ CREATE TABLE users (
   created_at TEXT    DEFAULT (datetime('now')),
   updated_at TEXT    DEFAULT (datetime('now'))
 );
-```
 
----
+Deployment Guide
+Frontend:
+Deploy the frontend folder to any static host.
 
-## 🌐 Deployment Guide
+Netlify — drag and drop the frontend folder at netlify.com/drop
+Vercel — vercel --cwd frontend
+GitHub Pages — push frontend folder to a repo, enable Pages
 
-### Frontend
-Deploy the `/frontend` folder to any static host:
-- **Netlify** — drag & drop the `frontend/` folder at netlify.com/drop
-- **Vercel** — `vercel --cwd frontend`
-- **GitHub Pages** — push `frontend/` to a repo, enable Pages
+Backend and Database:
+ServiceNotesRailwayConnect GitHub repo, set start command to node backend/server.jsRenderFree tier, auto-deploy from GitHubFly.iofly launch in the backend folder
+For production, consider migrating from SQLite to PostgreSQL by using the pg package instead of better-sqlite3.
 
-### Backend + Database
-| Service | Notes |
-|---------|-------|
-| **Railway** | Connect GitHub repo, set start command to `node backend/server.js` |
-| **Render** | Free tier, auto-deploy from GitHub |
-| **Fly.io** | `fly launch` in the backend folder |
+Upgrade Path
+FeatureHow to AddAuthenticationAdd JWT: npm install jsonwebtoken bcryptjsPostgreSQLReplace better-sqlite3 with pg and a connection poolFile uploadsAdd multer middlewareRate limitingAdd express-rate-limitValidationAdd joi or zod for schema validationLoggingAdd morgan middleware
 
-> For production, consider migrating from SQLite to **PostgreSQL** (use the `pg` package instead of `better-sqlite3`).
+Tech Stack
+LayerTechnologyFrontendHTML5, CSS3 (custom, no framework), Vanilla JS (ES2022)BackendNode.js 18+, Express 4DatabaseSQLite via better-sqlite3FontsSyne, DM Mono, DM Sans (Google Fonts)Mock APIJSONPlaceholder (fallback mode)
 
----
-
-## 🔑 Upgrade Path
-
-| Feature | How to Add |
-|---------|-----------|
-| Authentication | Add JWT: `npm i jsonwebtoken bcryptjs` |
-| PostgreSQL | Replace `better-sqlite3` with `pg` + connection pool |
-| File uploads | Add `multer` middleware |
-| Rate limiting | Add `express-rate-limit` |
-| Validation | Add `joi` or `zod` for schema validation |
-| Logging | Add `morgan` middleware |
-
----
-
-## 🛠 Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Frontend | HTML5, CSS3 (custom, no framework), Vanilla JS (ES2022) |
-| Backend | Node.js 18+, Express 4 |
-| Database | SQLite via better-sqlite3 |
-| Fonts | Syne, DM Mono, DM Sans (Google Fonts) |
-| Mock API | JSONPlaceholder (fallback mode) |
-
----
-
-## 📄 License
-
+License
 MIT — free to use, modify, and deploy.
