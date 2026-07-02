@@ -2,23 +2,6 @@
 
 A professional, fully responsive CRUD Operations Dashboard using **HTML + CSS + Vanilla JavaScript** for the frontend and **Node.js + Express + SQLite** for the optional real backend.
 
-Project Structure
-dataforge/
-├── frontend/
-│   ├── index.html        Main UI (Dashboard + Records views)
-│   ├── style.css         Dark industrial theme, fully responsive
-│   └── app.js             All CRUD logic, API calls, state management
-│
-├── backend/
-│   ├── server.js          Express app entry point
-│   ├── package.json       Dependencies
-│   ├── routes/
-│   │   └── users.js       GET / POST / PUT / DELETE /api/users
-│   └── db/
-│       └── database.js    SQLite setup, schema, seed data
-│
-└── README.md
-
 Quick Start
 Option A — Frontend Only (Zero Setup, Uses Mock API)
 Just open the file in your browser:
