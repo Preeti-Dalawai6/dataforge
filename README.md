@@ -122,8 +122,8 @@ Add request logging for easier debugging and monitoring
 Deploy the frontend and backend separately using services such as Netlify, Vercel, Railway, or Render
 
 ## Author and Contact
-Author: [Preeti Dalawai]
-Email: [preetidalawai2004@gmail.com]
+Author: Preeti Dalawai
+Email: preetidalawai2004@gmail.com
 
 ## License
 This project is licensed under the MIT License. You are free to use, modify, and deploy it.
